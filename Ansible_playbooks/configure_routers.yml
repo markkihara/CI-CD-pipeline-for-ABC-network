@@ -1,0 +1,26 @@
+---
+- name: Configure Basic Settings on Routers
+  hosts: routers
+  become: true
+  tasks:
+    - name: Set hostname
+      hostname:
+        name: "{{ hostname }}"
+      where: "{{ hostname }}" in (r1, r2, r3, r4)
+
+    - name: Enable OSPF routing
+      ios_config:
+        lines:
+          - router ospf 1
+        parents: loopback0
+
+    - name: Configure Loopback0 interface
+      ios_interface:
+        name: Loopback0
+        description: Loopback interface for OSPF
+        ipv4:
+          address: 10.0.0.1
+          mask: 255.255.255.0
+        ipv6:
+          address: 2001:DB8:CAFE:1::/64
+      where: "{{ hostname }}" in (r1, r2, r3, r4)

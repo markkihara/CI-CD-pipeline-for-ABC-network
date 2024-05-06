@@ -1,0 +1,25 @@
+---
+- name: Configure OSPF Routing
+  hosts: routers
+  become: true
+  tasks:
+    - name: Configure OSPF process
+      ios_config:
+        lines:
+          - router ospf 1
+          - area 0
+          - redistribute connected
+        parents: loopback0
+
+    - name: Set OSPF router ID
+      ios_config:
+        lines:
+          - router-id {{ ospf_id }}
+        parents: loopback0
+      where: "{{ hostname }}" in (r1, r2, r3, r4)
+      vars:
+        ospf_id:
+          r1: 10.0.0.1
+          r2: 10.0.0.2
+          r3: 10.0.0.3
+          r4: 10.0.0.4

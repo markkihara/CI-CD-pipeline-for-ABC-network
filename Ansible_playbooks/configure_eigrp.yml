@@ -1,0 +1,37 @@
+---
+- name: Configure EIGRP Routing
+  hosts: R1
+  become: true
+  tasks:
+    - name: Configure EIGRP process
+      ios_config:
+        lines:
+          - router eigrp 100
+          - redistribute connected
+        parents: Loopback0
+
+    - name: Set EIGRP AS number
+      ios_config:
+        lines:
+          - autonomous-system {{ eigrp_as }}
+        parents: Loopback0
+      vars:
+        eigrp_as: 65000
+
+  hosts: R2
+  become: true
+  tasks:
+    - name: Configure EIGRP process
+      ios_config:
+        lines:
+          - router eigrp 100
+          - redistribute connected
+        parents: Loopback0
+
+    - name: Set EIGRP AS number
+      ios_config:
+        lines:
+          - autonomous-system {{ eigrp_as }}
+        parents: Loopback0
+      vars:
+        eigrp_as: 65100
